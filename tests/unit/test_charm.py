@@ -61,6 +61,10 @@ def test_nginx_pebble_ready(loaded_ctx):
                 "period": "360m",
                 "exec": {
                     "command": "/bin/upki-mirror /var/www/html",
+                    "environment": {
+                        "HTTP_PROXY": "",
+                        "HTTPS_PROXY": "",
+                    },
                 },
                 "startup": "enabled",
             },

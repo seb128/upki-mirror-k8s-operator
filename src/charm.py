@@ -5,6 +5,7 @@
 """Charmed Operator for upki-mirror; a service for fetching and serving crlite filters."""
 
 import logging
+import os
 
 import ops
 from charms.loki_k8s.v0.loki_push_api import LogProxyConsumer
@@ -72,6 +73,10 @@ class UpkiMirrorCharm(ops.CharmBase):
                         "period": "360m",
                         "exec": {
                             "command": "/bin/upki-mirror /var/www/html",
+                            "environment": {
+                                "HTTP_PROXY": os.environ.get("JUJU_CHARM_HTTP_PROXY", ""),
+                                "HTTPS_PROXY": os.environ.get("JUJU_CHARM_HTTPS_PROXY", ""),
+                            },
                         },
                         "startup": "enabled",
                     },
