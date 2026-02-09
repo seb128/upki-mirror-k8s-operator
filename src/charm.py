@@ -52,7 +52,7 @@ class UpkiMirrorCharm(ops.CharmBase):
         return ops.pebble.Layer(
             {
                 "services": {
-                    "upki-mirror": {
+                    "nginx": {
                         "override": "replace",
                         "summary": "nginx",
                         "command": "nginx -g 'daemon off;'",
