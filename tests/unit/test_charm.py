@@ -40,7 +40,7 @@ def test_nginx_pebble_ready(loaded_ctx):
 
     assert result.get_container("nginx").layers["nginx"] == {
         "services": {
-            "upki-mirror": {
+            "nginx": {
                 "override": "replace",
                 "summary": "nginx",
                 "command": "nginx -g 'daemon off;'",
