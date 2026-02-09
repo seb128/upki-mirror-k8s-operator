@@ -57,7 +57,7 @@ class UpkiMirrorCharm(ops.CharmBase):
                         "summary": "nginx",
                         "command": "nginx -g 'daemon off;'",
                         "startup": "enabled",
-                    }
+                    },
                 },
                 "checks": {
                     "up": {

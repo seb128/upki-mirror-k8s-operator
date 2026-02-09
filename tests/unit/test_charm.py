@@ -45,7 +45,7 @@ def test_nginx_pebble_ready(loaded_ctx):
                 "summary": "nginx",
                 "command": "nginx -g 'daemon off;'",
                 "startup": "enabled",
-            }
+            },
         },
         "checks": {
             "up": {
@@ -70,6 +70,8 @@ def test_nginx_pebble_ready(loaded_ctx):
             },
         },
     }
-    assert result.get_container("nginx").service_statuses == {"upki-mirror": ServiceStatus.ACTIVE}
+    assert result.get_container("nginx").service_statuses == {
+        "nginx": ServiceStatus.ACTIVE,
+    }
     assert result.opened_ports == frozenset({TCPPort(80)})
     assert result.unit_status == ActiveStatus()
