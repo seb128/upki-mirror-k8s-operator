@@ -18,6 +18,14 @@ def test_deploy(juju: jubilant.Juju, upki_mirror_charm, upki_mirror_oci_image):
 
 
 @retry(retry_num=10, retry_sleep_sec=3)
+def test_manifest_was_fetched(juju: jubilant.Juju):
+    output = juju.ssh(
+        f"{UPKI_MIRROR}/0", "ls -l /var/www/html/manifest.json", container="nginx"
+    ).strip()
+    assert "/var/www/html/manifest.json" in output
+
+
+@retry(retry_num=10, retry_sleep_sec=3)
 def test_application_is_up(juju: jubilant.Juju):
     address = juju.status().apps[UPKI_MIRROR].units[f"{UPKI_MIRROR}/0"].address
     response = urlopen(f"http://{address}/manifest.json")
