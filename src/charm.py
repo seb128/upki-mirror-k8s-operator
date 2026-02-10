@@ -41,7 +41,15 @@ class UpkiMirrorCharm(ops.CharmBase):
     def _on_nginx_pebble_ready(self, event: ops.WorkloadEvent):
         """Define and start a workload using the Pebble API."""
         self._container.add_layer("nginx", self.pebble_layer(), combine=True)
-        self._container.exec(["/bin/upki-mirror", "/var/www/html"])
+        try:
+            stdout, stderr = self._container.exec(
+                ["/bin/upki-mirror", "/var/www/html"]
+            ).wait_output()
+            logger.info("upki-mirror completed: %s", stdout)
+        except ops.pebble.ExecError as e:
+            logger.error("upki-mirror failed: %s", e.stderr)
+            self.unit.status = ops.BlockedStatus("Initial mirror fetch failed")
+            return
         self._container.replan()
 
         self.unit.open_port(protocol="tcp", port=80)
