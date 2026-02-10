@@ -45,9 +45,9 @@ class UpkiMirrorCharm(ops.CharmBase):
             stdout, stderr = self._container.exec(
                 ["/bin/upki-mirror", "/var/www/html"]
             ).wait_output()
-            logger.info(f"upki-mirror completed: {stdout}")
+            logger.info("upki-mirror completed: %s", stdout)
         except ops.pebble.ExecError as e:
-            logger.error(f"upki-mirror failed: {e.stderr}")
+            logger.error("upki-mirror failed: %s", e.stderr)
             self.unit.status = ops.BlockedStatus("Initial mirror fetch failed")
             return
         self._container.replan()
