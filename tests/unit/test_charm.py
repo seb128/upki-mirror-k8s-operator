@@ -6,6 +6,7 @@ import pytest
 from ops.pebble import ServiceStatus
 from ops.testing import (
     ActiveStatus,
+    BlockedStatus,
     Container,
     Context,
     Exec,
@@ -73,3 +74,30 @@ def test_nginx_pebble_ready(loaded_ctx):
     assert result.get_container("nginx").service_statuses == {"upki-mirror": ServiceStatus.ACTIVE}
     assert result.opened_ports == frozenset({TCPPort(80)})
     assert result.unit_status == ActiveStatus()
+
+
+def test_nginx_pebble_ready_exec_error(charm):
+    ctx = Context(charm)
+    container = Container(
+        name="nginx",
+        can_connect=True,
+        execs={
+            Exec(
+                ("/bin/upki-mirror", "/var/www/html"),
+                return_code=1,
+                stderr="Failed to fetch mirror",
+            )
+        },
+    )
+    state = State(containers=[container])
+
+    result = ctx.run(ctx.on.pebble_ready(container=container), state)
+
+    # Layer should still be added
+    assert "nginx" in result.get_container("nginx").layers
+    # Service should not be started (no replan)
+    assert result.get_container("nginx").service_statuses == {}
+    # Port should not be opened
+    assert result.opened_ports == frozenset()
+    # Status should be BlockedStatus
+    assert result.unit_status == BlockedStatus("Initial mirror fetch failed")
